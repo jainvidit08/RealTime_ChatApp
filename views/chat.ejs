@@ -12,9 +12,14 @@
     
     <!-- Sidebar for Rooms -->
     <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2>Hi, <%= user.username %>!</h2>
-        <a href="/auth/logout" class="logout-btn">Logout</a>
+      <div class="sidebar-header" style="flex-direction: column; align-items: flex-start; gap: 0.75rem;">
+        <h2 style="margin: 0;">Hi, <%= user.username %>!</h2>
+        <div style="display: flex; gap: 0.5rem; width: 100%;">
+          <% if (user.role === 'admin') { %>
+            <a href="/admin" class="logout-btn" style="background: rgba(14, 165, 233, 0.1); color: var(--accent-color); flex: 1; text-align: center;">Admin</a>
+          <% } %>
+          <a href="/auth/logout" class="logout-btn" style="flex: 1; text-align: center;">Logout</a>
+        </div>
       </div>
       
       <div class="room-list">
