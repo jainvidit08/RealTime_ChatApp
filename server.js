@@ -26,10 +26,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 const authRoutes = require('./routes/auth');
 const chatRoutes = require('./routes/chat');
+const pushRoutes = require('./routes/push');
+const adminRoutes = require('./routes/admin');
 const verifyJWT = require('./middleware/verifyJWT');
 
 app.use('/auth', authRoutes);
 app.use('/chat', chatRoutes);
+app.use('/push', pushRoutes);
+app.use('/admin', adminRoutes);
 
 // Root route redirects to chat, which triggers JWT check, or sends to login
 app.get('/', (req, res) => {

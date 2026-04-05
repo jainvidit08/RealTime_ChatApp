@@ -159,3 +159,55 @@ function updateTypingIndicator() {
     typingIndicator.classList.add('hidden');
   }
 }
+
+// 7. Web Push Notification Setup
+async function setupPushNotifications() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    try {
+      // Register service worker
+      const register = await navigator.serviceWorker.register('/sw.js');
+      
+      // Request permission
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') return;
+
+      // Get VAPID public key from backend
+      const response = await fetch('/push/vapidPublicKey');
+      const { publicKey } = await response.json();
+
+      // Convert VAPID key formats
+      const convertedVapidKey = urlBase64ToUint8Array(publicKey);
+
+      // Subscribe user using the browser's PushManager
+      const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+      });
+
+      // Send the subscription credentials to our backend
+      await fetch('/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription)
+      });
+      console.log('Push notifications subscribed and sent to server!');
+    } catch (error) {
+      console.error('Push setup failed:', error);
+    }
+  }
+}
+
+// Utility to convert Base64 string to Uint8Array for PushManager
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// Initialize push on load
+setupPushNotifications();
