@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - RealTime Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <h1>Create Account</h1>
+    <p>Join the real-time chat platform</p>
+    
+    <form action="/auth/register" method="POST">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <!-- The 'name' attribute ensures this is mapped to req.body.username in Express -->
+        <input type="text" id="username" name="username" required autocomplete="username" placeholder="Choose a username">
+      </div>
+      
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="Create a strong password">
+      </div>
+      
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+    
+    <div class="links">
+      Already have an account? <a href="/auth/login">Sign In</a>
+    </div>
+  </div>
+</body>
+</html>
