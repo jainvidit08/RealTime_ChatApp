@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
   hasLoggedIn: {
     type: Boolean,
     default: false
-  },
-  pushSubscription: {
-    type: Object, // Web Push subscription object from the browser
-    default: null
   }
 }, { timestamps: true });
 

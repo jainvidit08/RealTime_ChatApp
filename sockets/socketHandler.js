@@ -2,7 +2,6 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 const Snapshot = require('../models/Snapshot');
 const Room = require('../models/Room');
-const webpush = require('web-push');
 
 // We use this map to track which users are currently online globally
 const onlineUsers = new Map();
@@ -47,27 +46,6 @@ module.exports = (io) => {
         // Broadcast the message ONLY to users in this specific roomId
         io.to(roomId).emit('receive_message', populatedMsg);
 
-        // --- PUSH NOTIFICATION LOGIC ---
-        // Find users in the room who are NOT online right now
-        const room = await Room.findById(roomId).populate('members');
-        
-        for (const member of room.members) {
-          // If the member is NOT in onlineUsers map, and they have a pushSubscription, push!
-          if (!onlineUsers.has(member._id.toString()) && member._id.toString() !== senderId.toString()) {
-            if (member.pushSubscription) {
-              const payload = JSON.stringify({
-                title: `New Message in ${room.name || 'Chat'}`,
-                body: `${populatedMsg.senderId.username}: ${content.length > 50 ? content.substring(0, 50) + '...' : content}`,
-                url: '/chat'
-              });
-              try {
-                await webpush.sendNotification(member.pushSubscription, payload);
-              } catch (err) {
-                console.error('Web Push failed for user', member.username, err.message);
-              }
-            }
-          }
-        }
       } catch (error) {
         console.error('Socket Send Message Error:', error);
       }
