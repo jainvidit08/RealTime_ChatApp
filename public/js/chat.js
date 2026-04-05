@@ -159,3 +159,34 @@ function updateTypingIndicator() {
     typingIndicator.classList.add('hidden');
   }
 }
+
+// 7. Handle Private Chat Searches
+const privateChatForm = document.getElementById('private-chat-form');
+const searchUsernameInput = document.getElementById('search-username');
+
+if (privateChatForm) {
+  privateChatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const targetUsername = searchUsernameInput.value.trim();
+    if (!targetUsername) return;
+
+    try {
+      const response = await fetch('/chat/private', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUsername })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Success: Reload page so the rooms refetch and their name populates nicely
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to start chat');
+      }
+    } catch (err) {
+      alert('Error searching for user');
+    }
+  });
+}

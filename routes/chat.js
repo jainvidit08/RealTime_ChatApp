@@ -12,4 +12,7 @@ router.get('/', chatController.renderDashboard);
 // API endpoint to fetch history dynamically when a room is clicked
 router.get('/messages/:roomId', chatController.getMessages);
 
+// API endpoint to create/fetch a private DM room
+router.post('/private', chatController.createOrGetPrivateRoom);
+
 module.exports = router;
