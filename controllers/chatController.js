@@ -1,19 +1,27 @@
 const Room = require('../models/Room');
 const Message = require('../models/Message');
+const User = require('../models/User');
 
 exports.renderDashboard = async (req, res) => {
   try {
+    // Fetch the full user to ensure we have the robust username (in case old JWTs lack it)
+    const fullUser = await User.findById(req.user.userId);
+
     // 1. Fetch rooms this user belongs to
     const rooms = await Room.find({ 
       $or: [
         { type: 'group' }, // All users can see group rooms
-        { members: req.user.userId } // Private rooms they belong to
+        { members: fullUser._id } // Private rooms they belong to
       ]
     }).populate('members', 'username');
 
     // 2. We pass the user object, roles, and rooms to the view
     res.render('chat', { 
-      user: req.user,
+      user: {
+        userId: fullUser._id,
+        username: fullUser.username,
+        role: fullUser.role
+      },
       rooms: rooms 
     });
   } catch (error) {
