@@ -25,19 +25,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 const authRoutes = require('./routes/auth');
+const chatRoutes = require('./routes/chat');
 const verifyJWT = require('./middleware/verifyJWT');
 
 app.use('/auth', authRoutes);
+app.use('/chat', chatRoutes);
 
-// Protected temporary route for validation
-app.get('/chat', verifyJWT, (req, res) => {
-  res.send(`<h1>Welcome to the chat area!</h1><p>Your Role: ${req.user.role}</p><a href="/auth/logout">Logout</a>`);
-});
-
-// Root route redirects to login
+// Root route redirects to chat, which triggers JWT check, or sends to login
 app.get('/', (req, res) => {
-  res.redirect('/auth/login');
+  res.redirect('/chat');
 });
+
+// Setup WebSockets
+const socketHandler = require('./sockets/socketHandler');
+socketHandler(io);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
